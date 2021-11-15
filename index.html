@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.min.js"></script>
+    <script src="/main.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas class="stage"></canvas>
+
+    <script>
+      function init() {
+        //レンダラーを作成
+        const renderer = new THREE.WebGLRenderer({
+          canvas: document.querySelector(".stage")
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //シーンを作成
+        const scene = new THREE.Scene();
+
+        starNight();
+        function starNight() {
+          // 形状データを作成
+          const geometry = new THREE.Geometry();
+
+          for (let i = 0; i < 1000; i++) {
+            const star = new THREE.Vector3();
+            star.x = THREE.Math.randFloatSpread(3000);
+            star.y = THREE.Math.randFloatSpread(3000);
+            star.z = THREE.Math.randFloatSpread(3000);
+
+            geometry.vertices.push(star);
+          }
+
+          // マテリアルを作成
+          const material = new THREE.PointsMaterial({
+            size: 10,
+            color: 0xffffff
+          });
+          // 物体を作成
+          const star = new THREE.Points(geometry, material);
+          scene.add(star);
+        }
+
+        //カメラを作成
+        const camera = new THREE.PerspectiveCamera(
+          50,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          2000
+        );
+
+        const controls = new THREE.OrbitControls(camera);
+        controls.enableDamping = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 1;
+
+        camera.position.set(0, 0, 1000);
+
+        //球を作成
+        const geometry = new THREE.SphereGeometry(100, 32, 32);
+        const material = new THREE.MeshNormalMaterial();
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        renderScene();
+
+        //アニメーション
+        function renderScene() {
+          requestAnimationFrame(renderScene);
+          controls.update();
+          renderer.render(scene, camera);
+        }
+      }
+
+      window.addEventListener("load", init);
+    </script>
+  </body>
+</html>
