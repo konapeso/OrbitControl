@@ -1,9 +1,15 @@
 window.addEventListener('load', init);
  
 function init() {
+    // マウス座標管理用のベクトルを作成
+    const mouse = new THREE.Vector2();
+
+    // canvas 要素の参照を取得する
+    const canvas = document.querySelector('#canvas');
+
     // レンダラーを作成
     const renderer = new THREE.WebGLRenderer({
-        canvas: document.querySelector('#canvas'),
+        canvas: canvas,
         antialias: true
     });
     // シーンを作成
@@ -12,11 +18,13 @@ function init() {
     // カメラを作成
     const camera = new THREE.PerspectiveCamera(45, 1);
     camera.fov = 60;
-    camera.position.set(0, 500, 800);
+    camera.position.set(0, 0, 1000);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
  
     // Load GLTF or GLB
     const loader = new THREE.GLTFLoader();
-    const url = './lemon.glb';
+    const url = 'lemon.glb';
  
     let model = null;
     loader.load(
@@ -24,7 +32,7 @@ function init() {
         function (gltf) {
             model = gltf.scene;
             model.scale.set(100.0, 100.0, 100.0);
-            model.position.set(0, 500, 0);
+            model.position.set(0, -100, 0);
             //回転の調整
             //model.rotation.y = THREE.Math.DEG2RAD * -45;
             scene.add(model);
@@ -45,6 +53,8 @@ function init() {
     // 初回実行
     tick();
     onResize();
+
+    
  
     // リサイズイベント発生で実行
     window.addEventListener('resize', onResize);
@@ -70,6 +80,7 @@ function init() {
     }
  
     function tick() {
+        controls.update();
         requestAnimationFrame(tick);
         //回転
         if (model) {
